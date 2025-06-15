@@ -3,15 +3,19 @@ options:
   defaultLogsBucketBehavior: 'REGIONAL_USER_OWNED_BUCKET'
 
 steps:
-  # Step 1: Install dependencies and run unit tests
-  # This step uses a standard Node.js image to execute npm commands.
-  # It will run 'npm install' first, then 'npm test'. If tests fail, the build stops here.
-  - name: 'gcr.io/cloud-builders/npm'
+  # Step 1: Install dependencies using Node.js v18
+  # We specify a modern Node.js image to ensure compatibility with Jest.
+  # We also specify 'npm' as the entrypoint for the command.
+  - name: 'node:18'
+    entrypoint: 'npm'
     args: ['install']
-  - name: 'gcr.io/cloud-builders/npm'
+
+  # Step 2: Run unit tests using Node.js v18
+  - name: 'node:18'
+    entrypoint: 'npm'
     args: ['test']
 
-  # Step 2: Build the container image (only runs if tests pass)
+  # Step 3: Build the container image (only runs if tests pass)
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -19,13 +23,13 @@ steps:
       - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA'
       - '.'
 
-  # Step 3: Push the container image to Artifact Registry
+  # Step 4: Push the container image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA'
 
-  # Step 4: Deploy container image to Cloud Run
+  # Step 5: Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
