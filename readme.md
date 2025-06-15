@@ -1,5 +1,5 @@
-# mega-care-connect
-Mega Care Connect LIFF App
+# mega-care-connect ss
+Mega Care Connect LIFF App Liff number 2005687951-Y3wNramZ
 
 A simple LINE Front-end Framework (LIFF) application designed to demonstrate a complete CI/CD workflow. The application authenticates a user, displays their LINE profile information, and is automatically deployed to Google Cloud Run from GitHub using Google Cloud Build.
 
