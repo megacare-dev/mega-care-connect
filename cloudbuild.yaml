@@ -8,14 +8,14 @@ steps:
     args:
       - 'build'
       - '-t'
-      - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/hello-liff-app:$COMMIT_SHA'
+      - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA' # <-- CHANGED
       - '.'
 
   # 2. Push the container image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
-      - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/hello-liff-app:$COMMIT_SHA'
+      - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA' # <-- CHANGED
 
   # 3. Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -23,12 +23,13 @@ steps:
     args:
       - 'run'
       - 'deploy'
-      - 'hello-liff-service' # <-- The name of your Cloud Run service
-      - '--image=asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/hello-liff-app:$COMMIT_SHA'
+      - 'mega-care-connect-service' # <-- CHANGED for consistency
+      - '--image=asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA' # <-- CHANGED
       - '--region=asia-southeast1'
       - '--platform=managed'
       - '--allow-unauthenticated'
+      - '--port=80' # <-- ADD THIS LINE TO FIX THE ERROR
 
 # Store the built image in the new Artifact Registry
 images:
-  - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/hello-liff-app:$COMMIT_SHA'
+  - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA' # <-- CHANGED
