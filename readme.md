@@ -1,3 +1,4 @@
+# mega-care-connect
 Mega Care Connect LIFF App
 
 A simple LINE Front-end Framework (LIFF) application designed to demonstrate a complete CI/CD workflow. The application authenticates a user, displays their LINE profile information, and is automatically deployed to Google Cloud Run from GitHub using Google Cloud Build.
@@ -64,6 +65,8 @@ Platform: Google Cloud Build.
 The pipeline performs the following steps automatically:
 
 Builds the Docker image based on the Dockerfile.
-Pushes the new image to Google Artifact Registry, tagged with the unique commit SHA.
+Pushes the new image to Google Artifact Registry (asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo).
 Deploys the new image revision to the mega-care-connect-service on Google Cloud Run in the asia-southeast1 (Singapore) region.
-This README was generated on June 15, 2025.
+License
+This project is licensed under the MIT License.
+

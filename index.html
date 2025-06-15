@@ -1,22 +1,163 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>LIFF Hello World</title>
+  <title>LIFF Device Registration</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    /* --- Mint Color Theme Variables --- */
+    :root {
+      --mint-primary: #3EB489; /* A vibrant, fresh mint */
+      --mint-darker: #35A27A;  /* For hover states */
+      --background-light: #F0FFF4; /* A very light mint (Honeydew) for the page background */
+      --text-dark: #2F4F4F;   /* Dark Slate Gray for readable text */
+      --card-background: #FFFFFF;
+      --border-light: #DDEEED;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--background-light);
+      color: var(--text-dark);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    h1 {
+      color: var(--mint-primary);
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    /* --- Card Style for Profile and Form --- */
+    .card {
+      background-color: var(--card-background);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border-light);
+    }
+    
+    #profile {
+      display: flex;
+      align-items: center;
+    }
+
+    #profile img {
+      border-radius: 50%;
+      margin-right: 20px;
+      border: 2px solid var(--border-light);
+    }
+
+    #profile p {
+      margin: 4px 0;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      background-color: #F9F9F9;
+      border-color: var(--border-light);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--mint-primary);
+      box-shadow: 0 0 0 3px rgba(62, 180, 137, 0.2);
+    }
+    
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--mint-primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    
+    button:hover {
+      background-color: var(--mint-darker);
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 <body>
-  <h1>LIFF Hello World</h1>
-  <div id="profile" style="display: none;">
-    <p><strong>LINE ID:</strong> <span id="userId"></span></p>
-    <p><strong>Display Name:</strong> <span id="displayName"></span></p>
-    <img id="profilePicture" width="100">
+
+  <div class="container">
+    <h1>Device Registration</h1>
+    
+    <div id="profile" class="card" style="display: none;">
+      <img id="profilePicture" width="60">
+      <div>
+        <p><strong>LINE ID:</strong> <span id="userId"></span></p>
+        <p><strong>Display Name:</strong> <span id="displayName"></span></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <form id="deviceForm">
+        <div class="form-group">
+          <label for="serialNumber">SN (Serial Number)</label>
+          <input 
+            type="text" 
+            id="serialNumber" 
+            name="serialNumber"
+            placeholder="Enter 11-digit CPAP serial number"
+            inputmode="numeric" 
+            pattern="[0-9]{11}" 
+            maxlength="11"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="deviceNumber">DN (Device Number)</label>
+          <input 
+            type="text" 
+            id="deviceNumber" 
+            name="deviceNumber"
+            placeholder="Enter 3-digit device number"
+            inputmode="numeric" 
+            pattern="[0-9]{3}" 
+            maxlength="3"
+            required
+          >
+        </div>
+        <button type="submit">Register Device</button>
+      </form>
+    </div>
+    
   </div>
 
   <script>
     async function main() {
       // Initialize LIFF
-      await liff.init({ liffId: "2005687951-Y3wNramZ" }); // 👈 PASTE YOUR LIFF ID HERE
+      await liff.init({ liffId: "2005687951-Y3wNramZ" });
+
       if (liff.isLoggedIn()) {
         // Get user profile
         const profile = await liff.getProfile();
@@ -27,7 +168,7 @@
         document.getElementById("profilePicture").src = profile.pictureUrl;
 
         // Show the profile section
-        document.getElementById("profile").style.display = "block";
+        document.getElementById("profile").style.display = "flex";
       } else {
         liff.login();
       }
