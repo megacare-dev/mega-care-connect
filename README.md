@@ -4,7 +4,7 @@
 
 ## Overview
 
-Mega Care Connect is a simple LINE Front-end Framework (LIFF) application (LIFF number: `2005687951-Y3wNramZ`) designed to demonstrate a complete CI/CD workflow. This application authenticates users, displays their LINE profile information, and is automatically deployed to Google Cloud Run from GitHub using Google Cloud Build.
+Mega Care Connect is a simple LINE Front-end Framework (LIFF) application  designed to demonstrate a complete CI/CD workflow. This application authenticates users, displays their LINE profile information, and is automatically deployed to Google Cloud Run from GitHub using Google Cloud Build.
 
 This project serves as a foundational template for creating, containerizing, and deploying modern serverless web applications integrated with the LINE platform.
 
