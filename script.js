@@ -37,5 +37,14 @@ function updateUserProfile(profile) {
   }
 }
 
-// Run the main application logic.
-main();
+// This block ensures the main function runs only when the script is loaded in a browser.
+// It checks if the 'window' object exists.
+if (typeof window !== 'undefined') {
+  main();
+}
+
+// This block exports the functions for testing purposes.
+// It checks if 'module' exists, which is true in the Node.js environment used by Jest.
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { main, updateUserProfile };
+}
