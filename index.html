@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LIFF Hello World</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <h1>LIFF Hello World</h1>
+  <div id="profile" style="display: none;">
+    <p><strong>LINE ID:</strong> <span id="userId"></span></p>
+    <p><strong>Display Name:</strong> <span id="displayName"></span></p>
+    <img id="profilePicture" width="100">
+  </div>
+
+  <script>
+    async function main() {
+      // Initialize LIFF
+      await liff.init({ liffId: "2005687951-Y3wNramZ" }); // 👈 PASTE YOUR LIFF ID HERE
+      if (liff.isLoggedIn()) {
+        // Get user profile
+        const profile = await liff.getProfile();
+
+        // Display user profile
+        document.getElementById("userId").textContent = profile.userId;
+        document.getElementById("displayName").textContent = profile.displayName;
+        document.getElementById("profilePicture").src = profile.pictureUrl;
+
+        // Show the profile section
+        document.getElementById("profile").style.display = "block";
+      } else {
+        liff.login();
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
