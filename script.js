@@ -18,6 +18,12 @@ function updateUserProfile(profile) {
 
   if (profile && userIdElement && displayNameElement && profilePictureElement) {
     userIdElement.textContent = profile.userId;
+    // Fetch customer data once the userId is set in the DOM and available
+    if (profile.userId) {
+      // We call this without await as updateUserProfile is synchronous
+      // and we want the UI update to continue without blocking on the fetch.
+      fetchAndDisplayCustomerData(profile.userId);
+    }
     displayNameElement.textContent = profile.displayName;
     if (profile.pictureUrl) {
       profilePictureElement.src = profile.pictureUrl;
@@ -30,7 +36,7 @@ function updateUserProfile(profile) {
     }
     profileSectionElement.style.display = "flex";
   } else {
-    // Hide profile section and clear data if profile is null or elements are missing
+    // Hide profile section if profile data is missing or DOM elements are not found.
     if (userIdElement) userIdElement.textContent = '';
     if (displayNameElement) displayNameElement.textContent = '';
     if (profilePictureElement) {
@@ -39,8 +45,17 @@ function updateUserProfile(profile) {
         profilePictureElement.style.display = 'none';
     }
     profileSectionElement.style.display = "none";
-    if (!profile && !(userIdElement && displayNameElement && profilePictureElement)) {
-        console.warn("Profile data or some profile DOM elements were not available. Hiding profile section.");
+
+    // Add more specific logging for why the profile is being hidden
+    if (!profile) {
+      console.log("updateUserProfile: No profile data provided. Profile section hidden.");
+    } else if (!(userIdElement && displayNameElement && profilePictureElement)) {
+      // This case implies profile is truthy, but some crucial child DOM elements are missing.
+      let missingElements = [];
+      if (!userIdElement) missingElements.push("userId");
+      if (!displayNameElement) missingElements.push("displayName");
+      if (!profilePictureElement) missingElements.push("profilePicture");
+      console.warn(`updateUserProfile: Profile data was provided, but some DOM elements for displaying it are missing: [${missingElements.join(', ')}]. Profile section hidden.`);
     }
   }
 }
@@ -142,10 +157,7 @@ async function main() {
     if (liff.isLoggedIn()) {
       const userProfile = await liff.getProfile();
       updateUserProfile(userProfile);
-      // Fetch and display customer data if a profile is available
-      if (userProfile && userProfile.userId) {
-        await fetchAndDisplayCustomerData(userProfile.userId);
-      }
+      // The call to fetchAndDisplayCustomerData is now handled within updateUserProfile
     } else {
       liff.login();
       updateUserProfile(null); // Hide profile while login is initiated
