@@ -18,44 +18,35 @@ const mockLiff = {
 };
 global.liff = mockLiff;
 
-// Get the actual LIFF_ID from script.js before mocking the module
-// This ensures we use the real LIFF_ID for checking liff.init calls.
-const { LIFF_ID: ACTUAL_LIFF_ID } = jest.requireActual('./script.js');
-
-// Mock specific functions from './script.js'
-// We want to test `main`'s interaction with `updateUserProfile` (mocked)
-// and test `updateUserProfile` (actual) in isolation.
-jest.mock('./script.js', () => {
-  const originalModule = jest.requireActual('./script.js');
-  return {
-    __esModule: true, // Important for modules that might use ES6 exports
-    ...originalModule, // Spread original module to keep other exports like LIFF_ID
-    main: originalModule.main, // We want to test the actual main function
-    updateUserProfile: jest.fn(), // Mock updateUserProfile for testing main's calls to it
-  };
-});
-
-// Import the functions from the (partially) mocked script.js
-const { main, updateUserProfile: mockUpdateUserProfile } = require('./script.js');
-// For testing the updateUserProfile function itself, we need the original one.
-const { updateUserProfile: actualUpdateUserProfile } = jest.requireActual('./script.js');
+// Import actual functions from script.js
+// We'll use jest.spyOn for main's interaction with updateUserProfile
+const scriptFunctions = jest.requireActual('./script.js');
+const { LIFF_ID: ACTUAL_LIFF_ID, main: actualMain, updateUserProfile: actualUpdateUserProfile } = scriptFunctions;
 
 describe('LIFF Device Registration App', () => {
   // Reset mocks before each test to ensure isolation
   beforeEach(() => {
     jest.clearAllMocks();
     document.body.innerHTML = html; // Reset the DOM state for each test
-    // Reset liff mock states
     mockLiff.init.mockClear().mockResolvedValue();
     mockLiff.isLoggedIn.mockClear();
     mockLiff.getProfile.mockClear().mockResolvedValue({
         userId: 'defaultUser', displayName: 'Default User', pictureUrl: 'http://example.com/default.jpg',
     });
     mockLiff.login.mockClear();
-    mockUpdateUserProfile.mockClear(); // mockUpdateUserProfile is from the jest.mock setup
   });
 
   describe('main function', () => {
+    let updateUserProfileSpy;
+
+    beforeEach(() => {
+      // Spy on the actual updateUserProfile function for the main function tests
+      updateUserProfileSpy = jest.spyOn(scriptFunctions, 'updateUserProfile').mockImplementation(() => {});
+    });
+    afterEach(() => {
+      updateUserProfileSpy.mockRestore(); // Restore the original function
+    });
+
     test('should initialize LIFF, get profile, and call updateUserProfile when user is logged in', async () => {
       // Arrange: Set up mock return values for a logged-in user
       mockLiff.isLoggedIn.mockReturnValue(true);
@@ -67,13 +58,13 @@ describe('LIFF Device Registration App', () => {
       mockLiff.getProfile.mockResolvedValue(mockProfile);
 
       // Act: Run the main function
-      await main();
+      await actualMain();
 
       // Assert: Verify that the correct functions were called and the DOM was updated
       expect(mockLiff.init).toHaveBeenCalledWith({ liffId: ACTUAL_LIFF_ID });
       expect(mockLiff.isLoggedIn).toHaveBeenCalled();
       expect(mockLiff.getProfile).toHaveBeenCalled();
-      expect(mockUpdateUserProfile).toHaveBeenCalledWith(mockProfile);
+      expect(updateUserProfileSpy).toHaveBeenCalledWith(mockProfile);
       expect(mockLiff.login).not.toHaveBeenCalled();
     });
 
@@ -82,29 +73,29 @@ describe('LIFF Device Registration App', () => {
       mockLiff.isLoggedIn.mockReturnValue(false);
 
       // Act: Run the main function
-      await main();
+      await actualMain();
 
       // Assert: Verify that login was called and profile was not fetched/updated
       expect(mockLiff.init).toHaveBeenCalledWith({ liffId: ACTUAL_LIFF_ID });
       expect(mockLiff.isLoggedIn).toHaveBeenCalled();
       expect(mockLiff.login).toHaveBeenCalled();
       expect(mockLiff.getProfile).not.toHaveBeenCalled();
-      expect(mockUpdateUserProfile).toHaveBeenCalledWith(null);
+      expect(updateUserProfileSpy).toHaveBeenCalledWith(null);
     });
 
     test('should log an error and call updateUserProfile with null if LIFF initialization fails', async () => {
       // Arrange: Mock an error during initialization
       const initError = new Error('Initialization Failed');
       mockLiff.init.mockRejectedValue(initError);
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {}); // Suppress console.error
 
-      await main();
+      await actualMain();
 
       expect(mockLiff.init).toHaveBeenCalledWith({ liffId: ACTUAL_LIFF_ID });
       expect(console.error).toHaveBeenCalledWith('Error in main LIFF function:', initError);
       expect(mockLiff.login).not.toHaveBeenCalled();
       expect(mockLiff.getProfile).not.toHaveBeenCalled();
-      expect(mockUpdateUserProfile).toHaveBeenCalledWith(null);
+      expect(updateUserProfileSpy).toHaveBeenCalledWith(null);
       
       consoleErrorSpy.mockRestore();
     });
@@ -112,13 +103,13 @@ describe('LIFF Device Registration App', () => {
     test('should log an error and call updateUserProfile with null if LIFF SDK is not loaded', async () => {
       const originalLiff = global.liff;
       delete global.liff; // Simulate LIFF SDK not being loaded
-      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {}); // Suppress console.error
 
-      await main();
+      await actualMain();
 
       expect(console.error).toHaveBeenCalledWith('LIFF SDK not loaded. Aborting main function.');
       expect(mockLiff.init).not.toHaveBeenCalled(); // liff.init shouldn't be called
-      expect(mockUpdateUserProfile).toHaveBeenCalledWith(null);
+      expect(updateUserProfileSpy).toHaveBeenCalledWith(null);
       
       consoleErrorSpy.mockRestore();
       global.liff = originalLiff; // Restore LIFF for other tests
@@ -141,7 +132,7 @@ describe('LIFF Device Registration App', () => {
         expect(document.getElementById('userId').textContent).toBe('test-user-id');
         expect(document.getElementById('displayName').textContent).toBe('Test Display Name');
         const profilePic = document.getElementById('profilePicture');
-        expect(profilePic.src).toBe('http://test.com/image.png');
+        expect(profilePic.src).toBe('http://test.com/image.png'); // This remains the same as it's a valid URL
         expect(profilePic.alt).toBe("Test Display Name's profile picture");
         expect(profilePic.style.display).toBe('');
         expect(document.getElementById('profile').style.display).toBe('flex');
@@ -156,8 +147,8 @@ describe('LIFF Device Registration App', () => {
         actualUpdateUserProfile(profile);
 
         const profilePic = document.getElementById('profilePicture');
-        expect(profilePic.src).toBe(''); // Or check it's the base URL if src is set to empty string
-        expect(profilePic.alt).toBe('');
+        expect(profilePic.src).toBe('http://localhost/'); // JSDOM resolves empty src to base URL
+        expect(profilePic.alt).toBe(''); // Alt text should be empty
         expect(profilePic.style.display).toBe('none');
         expect(document.getElementById('profile').style.display).toBe('flex'); // Profile section still visible
     });
@@ -175,7 +166,7 @@ describe('LIFF Device Registration App', () => {
         expect(document.getElementById('userId').textContent).toBe('');
         expect(document.getElementById('displayName').textContent).toBe('');
         const profilePic = document.getElementById('profilePicture');
-        expect(profilePic.src).toBe('');
+        expect(profilePic.src).toBe('http://localhost/'); // JSDOM resolves empty src to base URL
         expect(profilePic.alt).toBe('');
         expect(profilePic.style.display).toBe('none');
         expect(document.getElementById('profile').style.display).toBe('none');
