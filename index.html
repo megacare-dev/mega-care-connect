@@ -151,8 +151,110 @@
       </form>
     </div>
     
+    <div id="customerDetailsCard" class="card" style="display: none;">
+      <h2>Customer Details</h2>
+      <p><strong>Title:</strong> <span id="customerTitle"></span></p>
+      <p><strong>First Name:</strong> <span id="customerFirstName"></span></p>
+      <p><strong>Last Name:</strong> <span id="customerLastName"></span></p>
+      <p><strong>Date of Birth:</strong> <span id="customerDob"></span></p>
+      <p><strong>Location:</strong> <span id="customerLocation"></span></p>
+      <p><strong>Status:</strong> <span id="customerStatus"></span></p>
+      <p><strong>Setup Date:</strong> <span id="customerSetupDate"></span></p>
+      <p><strong>AirView Number:</strong> <span id="customerAirViewNumber"></span></p>
+      <p><strong>Monitoring Type:</strong> <span id="customerMonitoringType"></span></p>
+      <p><strong>Available Data:</strong> <span id="customerAvailableData"></span></p>
+      <p><strong>Dealer Patient ID:</strong> <span id="customerDealerPatientId"></span></p>
+    </div>
+
   </div>
 
-  <script src="script.js" defer></script>
+  <!-- <script src="script.js" defer></script> -->
+  <script>
+    async function main() {
+      try {
+        await liff.init({ liffId: "YOUR_LIFF_ID" }); // Replace YOUR_LIFF_ID with your actual LIFF ID
+        if (!liff.isLoggedIn()) {
+          liff.login();
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        document.getElementById("userId").textContent = profile.userId;
+        document.getElementById("displayName").textContent = profile.displayName;
+        if (profile.pictureUrl) {
+          document.getElementById("profilePicture").src = profile.pictureUrl;
+        }
+        document.getElementById("profile").style.display = "flex";
+
+        // Fetch customer data
+        await fetchAndDisplayCustomerData(profile.userId);
+
+      } catch (err) {
+        console.error("LIFF Initialization or Profile Fetch Error:", err);
+        alert("Error initializing LIFF or fetching profile: " + err.message);
+      }
+    }
+
+    async function fetchAndDisplayCustomerData(lineId) {
+      const apiUrl = `https://customers-service-15106852528.asia-southeast1.run.app/customers/line/${lineId}`;
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}: ${await response.text()}`);
+        }
+        const data = await response.json();
+
+        document.getElementById("customerTitle").textContent = data.title || "N/A";
+        document.getElementById("customerFirstName").textContent = data.firstName || "N/A";
+        document.getElementById("customerLastName").textContent = data.lastName || "N/A";
+        document.getElementById("customerDob").textContent = data.dob ? new Date(data.dob).toLocaleDateString() : "N/A";
+        document.getElementById("customerLocation").textContent = data.location || "N/A";
+        document.getElementById("customerStatus").textContent = data.status || "N/A";
+        document.getElementById("customerSetupDate").textContent = data.setupDate ? new Date(data.setupDate).toLocaleDateString() : "N/A";
+        document.getElementById("customerAirViewNumber").textContent = data.airViewNumber || "N/A";
+        document.getElementById("customerMonitoringType").textContent = data.monitoringType || "N/A";
+        document.getElementById("customerAvailableData").textContent = data.availableData || "N/A";
+        document.getElementById("customerDealerPatientId").textContent = data.dealerPatientId || "N/A";
+
+        document.getElementById("customerDetailsCard").style.display = "block";
+
+      } catch (error) {
+        console.error("Error fetching customer data:", error);
+        // Optionally display an error message to the user in the UI
+        const customerDetailsCard = document.getElementById("customerDetailsCard");
+        customerDetailsCard.innerHTML = `<p style="color: red;">Could not load customer details: ${error.message}</p>`;
+        customerDetailsCard.style.display = "block";
+      }
+    }
+
+    document.getElementById("deviceForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const serialNumber = document.getElementById("serialNumber").value;
+      const deviceNumber = document.getElementById("deviceNumber").value;
+      
+      if (!liff.isInClient()) {
+        alert("This function is only available in the LINE app.");
+        return;
+      }
+
+      try {
+        // Example: Sending a message back to the chat
+        await liff.sendMessages([
+          {
+            type: "text",
+            text: `Device Registration Attempt:\nSN: ${serialNumber}\nDN: ${deviceNumber}`
+          }
+        ]);
+        alert("Registration data sent to chat!");
+        // Potentially close the LIFF window
+        // liff.closeWindow(); 
+      } catch (error) {
+        console.error("Error sending message or closing LIFF window:", error);
+        alert("Error processing registration: " + error.message);
+      }
+    });
+
+    main();
+  </script>
 </body>
 </html>
