@@ -18,13 +18,6 @@ function updateUserProfile(profile) {
 
   if (profile && userIdElement && displayNameElement && profilePictureElement) {
     userIdElement.textContent = profile.userId;
-    // Fetch customer data once the userId is set in the DOM and available
-    if (profile.userId) {
-      console.log("LINE ID for customer data fetch:", profile.userId);
-      // We call this without await as updateUserProfile is synchronous
-      // and we want the UI update to continue without blocking on the fetch.
-      fetchAndDisplayCustomerData(profile.userId);
-    }
     displayNameElement.textContent = profile.displayName;
     if (profile.pictureUrl) {
       profilePictureElement.src = profile.pictureUrl;
@@ -58,49 +51,6 @@ function updateUserProfile(profile) {
       if (!profilePictureElement) missingElements.push("profilePicture");
       console.warn(`updateUserProfile: Profile data was provided, but some DOM elements for displaying it are missing: [${missingElements.join(', ')}]. Profile section hidden.`);
     }
-  }
-}
-
-/**
- * Fetches customer data from the API and displays it on the page.
- * @param {string} lineId - The LINE user ID.
- */
-async function fetchAndDisplayCustomerData(lineId) {
-  const apiUrl = `https://customers-service-15106852528.asia-southeast1.run.app/customers/line/${lineId}`;
-  const customerDetailsCard = document.getElementById("customerDetailsCard");
-
-  if (!customerDetailsCard) {
-    console.error("Customer details card DOM element not found.");
-    return;
-  }
-
-  try {
-    const response = await fetch(apiUrl);
-    console.log("Called customer API for LINE ID:", lineId, "Status:", response.status);
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`API request failed with status ${response.status}: ${errorText}`);
-    }
-    const data = await response.json();
-
-    document.getElementById("customerTitle").textContent = data.title || "N/A";
-    document.getElementById("customerFirstName").textContent = data.firstName || "N/A";
-    document.getElementById("customerLastName").textContent = data.lastName || "N/A";
-    document.getElementById("customerDob").textContent = data.dob ? new Date(data.dob).toLocaleDateString() : "N/A";
-    document.getElementById("customerLocation").textContent = data.location || "N/A";
-    document.getElementById("customerStatus").textContent = data.status || "N/A";
-    document.getElementById("customerSetupDate").textContent = data.setupDate ? new Date(data.setupDate).toLocaleDateString() : "N/A";
-    document.getElementById("customerAirViewNumber").textContent = data.airViewNumber || "N/A";
-    document.getElementById("customerMonitoringType").textContent = data.monitoringType || "N/A";
-    document.getElementById("customerAvailableData").textContent = data.availableData || "N/A";
-    document.getElementById("customerDealerPatientId").textContent = data.dealerPatientId || "N/A";
-
-    customerDetailsCard.style.display = "block";
-
-  } catch (error) {
-    console.error("Error fetching customer data:", error);
-    customerDetailsCard.innerHTML = `<p style="color: red;">Could not load customer details: ${error.message}</p>`;
-    customerDetailsCard.style.display = "block";
   }
 }
 
@@ -159,7 +109,6 @@ async function main() {
     if (liff.isLoggedIn()) {
       const userProfile = await liff.getProfile();
       updateUserProfile(userProfile);
-      // The call to fetchAndDisplayCustomerData is now handled within updateUserProfile
     } else {
       liff.login();
       updateUserProfile(null); // Hide profile while login is initiated
@@ -182,5 +131,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Exports for Jest testing environment
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { main, updateUserProfile, LIFF_ID, fetchAndDisplayCustomerData, setupDeviceFormListener };
+  module.exports = { main, updateUserProfile, LIFF_ID, setupDeviceFormListener };
 }
