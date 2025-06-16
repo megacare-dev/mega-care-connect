@@ -1,50 +1,77 @@
-// This is the main function that runs the LIFF application logic.
+// LIFF ID - Centralized for consistency
+const LIFF_ID = "2005687951-Y3wNramZ";
+
+/**
+ * Updates the user profile information in the DOM.
+ * @param {object|null} profile - The LIFF profile object, or null to hide profile.
+ */
+function updateUserProfile(profile) {
+  const userIdElement = document.getElementById("userId");
+  const displayNameElement = document.getElementById("displayName");
+  const profilePictureElement = document.getElementById("profilePicture");
+  const profileSectionElement = document.getElementById("profile");
+
+  if (!profileSectionElement) {
+    console.error("Profile section DOM element not found.");
+    return;
+  }
+
+  if (profile && userIdElement && displayNameElement && profilePictureElement) {
+    userIdElement.textContent = profile.userId;
+    displayNameElement.textContent = profile.displayName;
+    if (profile.pictureUrl) {
+      profilePictureElement.src = profile.pictureUrl;
+      profilePictureElement.alt = `${profile.displayName}'s profile picture`;
+      profilePictureElement.style.display = ''; // Show image
+    } else {
+      profilePictureElement.src = '';
+      profilePictureElement.alt = '';
+      profilePictureElement.style.display = 'none'; // Hide if no URL
+    }
+    profileSectionElement.style.display = "flex";
+  } else {
+    // Hide profile section and clear data if profile is null or elements are missing
+    if (userIdElement) userIdElement.textContent = '';
+    if (displayNameElement) displayNameElement.textContent = '';
+    if (profilePictureElement) {
+        profilePictureElement.src = '';
+        profilePictureElement.alt = '';
+        profilePictureElement.style.display = 'none';
+    }
+    profileSectionElement.style.display = "none";
+    if (!profile && !(userIdElement && displayNameElement && profilePictureElement)) {
+        console.warn("Profile data or some profile DOM elements were not available. Hiding profile section.");
+    }
+  }
+}
+
 async function main() {
   try {
-    // Initialize LIFF with your specific LIFF ID.
-    await liff.init({ liffId: "2005687951-Y3wNramZ" });
+    if (typeof liff === 'undefined') {
+      console.error("LIFF SDK not loaded. Aborting main function.");
+      updateUserProfile(null); // Ensure profile is hidden
+      return;
+    }
 
-    // Check if the user is logged in.
+    await liff.init({ liffId: LIFF_ID });
+
     if (liff.isLoggedIn()) {
-      // If logged in, get the user's profile.
-      const profile = await liff.getProfile();
-
-      // Update the DOM with the user's information.
-      updateUserProfile(profile);
+      const userProfile = await liff.getProfile();
+      updateUserProfile(userProfile);
     } else {
-      // If not logged in, initiate the login process.
       liff.login();
+      updateUserProfile(null); // Hide profile while login is initiated
     }
   } catch (error) {
-    // Log any errors that occur during initialization.
-    console.error('LIFF Initialization failed', error);
+    console.error("Error in main LIFF function:", error);
+    updateUserProfile(null); // Hide profile on error
   }
 }
 
-// A helper function to update the DOM with profile information.
-// This makes the logic cleaner and easier to test.
-function updateUserProfile(profile) {
-  if (profile) {
-    const userIdElement = document.getElementById("userId");
-    const displayNameElement = document.getElementById("displayName");
-    const profilePictureElement = document.getElementById("profilePicture");
-    const profileSectionElement = document.getElementById("profile");
+// Ensure the script runs after the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', main);
 
-    if (userIdElement) userIdElement.textContent = profile.userId;
-    if (displayNameElement) displayNameElement.textContent = profile.displayName;
-    if (profilePictureElement) profilePictureElement.src = profile.pictureUrl;
-    if (profileSectionElement) profileSectionElement.style.display = "flex";
-  }
-}
-
-// This block ensures the main function runs only when the script is loaded in a browser.
-// It checks if the 'window' object exists.
-if (typeof window !== 'undefined') {
-  main();
-}
-
-// This block exports the functions for testing purposes.
-// It checks if 'module' exists, which is true in the Node.js environment used by Jest.
+// Exports for Jest testing environment
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { main, updateUserProfile };
+  module.exports = { main, updateUserProfile, LIFF_ID };
 }

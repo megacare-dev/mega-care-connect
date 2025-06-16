@@ -153,28 +153,6 @@
     
   </div>
 
-  <script>
-    async function main() {
-      // Initialize LIFF
-      await liff.init({ liffId: "2005687951-Y3wNramZ" });
-
-      if (liff.isLoggedIn()) {
-        // Get user profile
-        const profile = await liff.getProfile();
-
-        // Display user profile
-        document.getElementById("userId").textContent = profile.userId;
-        document.getElementById("displayName").textContent = profile.displayName;
-        document.getElementById("profilePicture").src = profile.pictureUrl;
-
-        // Show the profile section
-        document.getElementById("profile").style.display = "flex";
-      } else {
-        liff.login();
-      }
-    }
-
-    main();
-  </script>
+  <script src="script.js" defer></script>
 </body>
 </html>

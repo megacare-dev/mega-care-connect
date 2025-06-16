@@ -2,46 +2,60 @@
 options:
   defaultLogsBucketBehavior: 'REGIONAL_USER_OWNED_BUCKET'
 
+substitutions:
+  _IMAGE_NAME: 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app'
+  _REGION: 'asia-southeast1'
+  _SERVICE_NAME: 'mega-care-connect-service'
+
 steps:
   # Step 1: Install dependencies using Node.js v18
   # We specify a modern Node.js image to ensure compatibility with Jest.
   # We also specify 'npm' as the entrypoint for the command.
   - name: 'node:18'
+    id: 'Install Dependencies'
     entrypoint: 'npm'
     args: ['install']
 
   # Step 2: Run unit tests using Node.js v18
   - name: 'node:18'
+    id: 'Run Unit Tests'
     entrypoint: 'npm'
     args: ['test']
+    waitFor: ['Install Dependencies']
 
   # Step 3: Build the container image (only runs if tests pass)
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Image'
     args:
       - 'build'
       - '-t'
-      - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA'
+      - '${_IMAGE_NAME}:$COMMIT_SHA'
       - '.'
+    waitFor: ['Run Unit Tests']
 
   # Step 4: Push the container image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push Image'
     args:
       - 'push'
-      - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA'
+      - '${_IMAGE_NAME}:$COMMIT_SHA'
+    waitFor: ['Build Image']
 
   # Step 5: Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Deploy to Cloud Run'
     entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
-      - 'mega-care-connect-service'
-      - '--image=asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA'
-      - '--region=asia-southeast1'
+      - '${_SERVICE_NAME}'
+      - '--image=${_IMAGE_NAME}:$COMMIT_SHA'
+      - '--region=${_REGION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
       - '--port=80'
+    waitFor: ['Push Image']
 
 # Store the built image in the new Artifact Registry
 images:
-  - 'asia-southeast1-docker.pkg.dev/mega-care-dev/mega-care-connect-repo/mega-care-connect-app:$COMMIT_SHA'
+  - '${_IMAGE_NAME}:$COMMIT_SHA'
