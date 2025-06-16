@@ -20,6 +20,7 @@ function updateUserProfile(profile) {
     userIdElement.textContent = profile.userId;
     // Fetch customer data once the userId is set in the DOM and available
     if (profile.userId) {
+      console.log("LINE ID for customer data fetch:", profile.userId);
       // We call this without await as updateUserProfile is synchronous
       // and we want the UI update to continue without blocking on the fetch.
       fetchAndDisplayCustomerData(profile.userId);
@@ -75,6 +76,7 @@ async function fetchAndDisplayCustomerData(lineId) {
 
   try {
     const response = await fetch(apiUrl);
+    console.log("Called customer API for LINE ID:", lineId, "Status:", response.status);
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`API request failed with status ${response.status}: ${errorText}`);
