@@ -37,16 +37,6 @@ describe('LIFF Device Registration App', () => {
   });
 
   describe('main function', () => {
-    let updateUserProfileSpy;
-
-    beforeEach(() => {
-      // Spy on the actual updateUserProfile function for the main function tests
-      updateUserProfileSpy = jest.spyOn(scriptFunctions, 'updateUserProfile').mockImplementation(() => {});
-    });
-    afterEach(() => {
-      updateUserProfileSpy.mockRestore(); // Restore the original function
-    });
-
     test('should initialize LIFF, get profile, and call updateUserProfile when user is logged in', async () => {
       // Arrange: Set up mock return values for a logged-in user
       mockLiff.isLoggedIn.mockReturnValue(true);
@@ -64,8 +54,13 @@ describe('LIFF Device Registration App', () => {
       expect(mockLiff.init).toHaveBeenCalledWith({ liffId: ACTUAL_LIFF_ID });
       expect(mockLiff.isLoggedIn).toHaveBeenCalled();
       expect(mockLiff.getProfile).toHaveBeenCalled();
-      expect(updateUserProfileSpy).toHaveBeenCalledWith(mockProfile);
       expect(mockLiff.login).not.toHaveBeenCalled();
+
+      // Assert DOM changes directly (since updateUserProfile is no longer mocked here)
+      expect(document.getElementById('userId').textContent).toBe(mockProfile.userId);
+      expect(document.getElementById('displayName').textContent).toBe(mockProfile.displayName);
+      expect(document.getElementById('profilePicture').src).toBe(mockProfile.pictureUrl);
+      expect(document.getElementById('profile').style.display).toBe('flex');
     });
 
     test('should initialize LIFF, call login, and call updateUserProfile with null when user is not logged in', async () => {
@@ -80,7 +75,13 @@ describe('LIFF Device Registration App', () => {
       expect(mockLiff.isLoggedIn).toHaveBeenCalled();
       expect(mockLiff.login).toHaveBeenCalled();
       expect(mockLiff.getProfile).not.toHaveBeenCalled();
-      expect(updateUserProfileSpy).toHaveBeenCalledWith(null);
+
+      // Assert DOM changes for hidden profile (actualUpdateUserProfile(null) will be called)
+      expect(document.getElementById('userId').textContent).toBe('');
+      expect(document.getElementById('displayName').textContent).toBe('');
+      expect(document.getElementById('profilePicture').src).toBe('http://localhost/'); // JSDOM resolves empty src
+      expect(document.getElementById('profilePicture').style.display).toBe('none');
+      expect(document.getElementById('profile').style.display).toBe('none');
     });
 
     test('should log an error and call updateUserProfile with null if LIFF initialization fails', async () => {
@@ -95,8 +96,13 @@ describe('LIFF Device Registration App', () => {
       expect(console.error).toHaveBeenCalledWith('Error in main LIFF function:', initError);
       expect(mockLiff.login).not.toHaveBeenCalled();
       expect(mockLiff.getProfile).not.toHaveBeenCalled();
-      expect(updateUserProfileSpy).toHaveBeenCalledWith(null);
       
+      // Assert DOM changes for hidden profile (actualUpdateUserProfile(null) will be called)
+      expect(document.getElementById('userId').textContent).toBe('');
+      expect(document.getElementById('displayName').textContent).toBe('');
+      expect(document.getElementById('profilePicture').src).toBe('http://localhost/');
+      expect(document.getElementById('profilePicture').style.display).toBe('none');
+      expect(document.getElementById('profile').style.display).toBe('none');
       consoleErrorSpy.mockRestore();
     });
 
@@ -109,8 +115,13 @@ describe('LIFF Device Registration App', () => {
 
       expect(console.error).toHaveBeenCalledWith('LIFF SDK not loaded. Aborting main function.');
       expect(mockLiff.init).not.toHaveBeenCalled(); // liff.init shouldn't be called
-      expect(updateUserProfileSpy).toHaveBeenCalledWith(null);
       
+      // Assert DOM changes for hidden profile (actualUpdateUserProfile(null) will be called)
+      expect(document.getElementById('userId').textContent).toBe('');
+      expect(document.getElementById('displayName').textContent).toBe('');
+      expect(document.getElementById('profilePicture').src).toBe('http://localhost/');
+      expect(document.getElementById('profilePicture').style.display).toBe('none');
+      expect(document.getElementById('profile').style.display).toBe('none');
       consoleErrorSpy.mockRestore();
       global.liff = originalLiff; // Restore LIFF for other tests
     });
