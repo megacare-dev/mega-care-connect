@@ -60,7 +60,7 @@ describe('LIFF Device Registration App', () => {
       expect(document.getElementById('userId').textContent).toBe(mockProfile.userId);
       expect(document.getElementById('displayName').textContent).toBe(mockProfile.displayName);
       expect(document.getElementById('profilePicture').src).toBe(mockProfile.pictureUrl);
-      expect(document.getElementById('profile').style.display).toBe('flex');
+      expect(document.getElementById('profile').classList.contains('profile--hidden')).toBe(false);
     });
 
     test('should initialize LIFF, call login, and call updateUserProfile with null when user is not logged in', async () => {
@@ -81,7 +81,7 @@ describe('LIFF Device Registration App', () => {
       expect(document.getElementById('displayName').textContent).toBe('');
       expect(document.getElementById('profilePicture').src).toBe('http://localhost/'); // JSDOM resolves empty src
       expect(document.getElementById('profilePicture').style.display).toBe('none');
-      expect(document.getElementById('profile').style.display).toBe('none');
+      expect(document.getElementById('profile').classList.contains('profile--hidden')).toBe(true);
     });
 
     test('should log an error and call updateUserProfile with null if LIFF initialization fails', async () => {
@@ -102,7 +102,7 @@ describe('LIFF Device Registration App', () => {
       expect(document.getElementById('displayName').textContent).toBe('');
       expect(document.getElementById('profilePicture').src).toBe('http://localhost/');
       expect(document.getElementById('profilePicture').style.display).toBe('none');
-      expect(document.getElementById('profile').style.display).toBe('none');
+      expect(document.getElementById('profile').classList.contains('profile--hidden')).toBe(true);
       consoleErrorSpy.mockRestore();
     });
 
@@ -121,7 +121,7 @@ describe('LIFF Device Registration App', () => {
       expect(document.getElementById('displayName').textContent).toBe('');
       expect(document.getElementById('profilePicture').src).toBe('http://localhost/');
       expect(document.getElementById('profilePicture').style.display).toBe('none');
-      expect(document.getElementById('profile').style.display).toBe('none');
+      expect(document.getElementById('profile').classList.contains('profile--hidden')).toBe(true);
       consoleErrorSpy.mockRestore();
       global.liff = originalLiff; // Restore LIFF for other tests
     });
@@ -146,7 +146,7 @@ describe('LIFF Device Registration App', () => {
         expect(profilePic.src).toBe('http://test.com/image.png'); // This remains the same as it's a valid URL
         expect(profilePic.alt).toBe("Test Display Name's profile picture");
         expect(profilePic.style.display).toBe('');
-        expect(document.getElementById('profile').style.display).toBe('flex');
+        expect(document.getElementById('profile').classList.contains('profile--hidden')).toBe(false);
     });
 
     test('should hide profile picture and set alt to empty if pictureUrl is not provided', () => {
@@ -161,7 +161,7 @@ describe('LIFF Device Registration App', () => {
         expect(profilePic.src).toBe('http://localhost/'); // JSDOM resolves empty src to base URL
         expect(profilePic.alt).toBe(''); // Alt text should be empty
         expect(profilePic.style.display).toBe('none');
-        expect(document.getElementById('profile').style.display).toBe('flex'); // Profile section still visible
+        expect(document.getElementById('profile').classList.contains('profile--hidden')).toBe(false); // Profile section still visible
     });
     
     test('should hide the profile section and clear data if profile is null', () => {
@@ -169,8 +169,8 @@ describe('LIFF Device Registration App', () => {
         document.getElementById('userId').textContent = 'old-id';
         document.getElementById('displayName').textContent = 'old-name';
         document.getElementById('profilePicture').src = 'http://example.com/old.jpg';
-        document.getElementById('profilePicture').style.display = '';
-        document.getElementById('profile').style.display = 'flex';
+        document.getElementById('profilePicture').style.display = ''; // This element's display is still directly manipulated
+        document.getElementById('profile').classList.remove('profile--hidden'); // Ensure it's visible before test
 
         actualUpdateUserProfile(null);
 
@@ -180,7 +180,7 @@ describe('LIFF Device Registration App', () => {
         expect(profilePic.src).toBe('http://localhost/'); // JSDOM resolves empty src to base URL
         expect(profilePic.alt).toBe('');
         expect(profilePic.style.display).toBe('none');
-        expect(document.getElementById('profile').style.display).toBe('none');
+        expect(document.getElementById('profile').classList.contains('profile--hidden')).toBe(true);
     });
 
     test('should log an error if profile section DOM element is missing', () => {
