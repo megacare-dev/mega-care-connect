@@ -48,13 +48,16 @@
       display: flex;
       align-items: center;
     }
+    
+    .profile--hidden {
+      display: none !important;
+    }
 
     #profile img {
       border-radius: 50%;
       margin-right: 20px;
       border: 2px solid var(--border-light);
     }
-
     #profile p {
       margin: 4px 0;
     }
@@ -111,7 +114,7 @@
   <div class="container">
     <h1>Device Registration</h1>
     
-    <div id="profile" class="card" style="display: none;">
+    <div id="profile" class="card profile--hidden">
       <img id="profilePicture" width="60">
       <div>
         <p><strong>LINE ID:</strong> <span id="userId"></span></p>

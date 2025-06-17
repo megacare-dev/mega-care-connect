@@ -28,7 +28,7 @@ function updateUserProfile(profile) {
       profilePictureElement.alt = '';
       profilePictureElement.style.display = 'none'; // Hide if no URL
     }
-    profileSectionElement.style.display = "flex";
+    profileSectionElement.classList.remove("profile--hidden");
   } else {
     // Hide profile section and clear data if profile is null or elements are missing
     if (userIdElement) userIdElement.textContent = '';
@@ -38,7 +38,7 @@ function updateUserProfile(profile) {
         profilePictureElement.alt = '';
         profilePictureElement.style.display = 'none';
     }
-    profileSectionElement.style.display = "none";
+    profileSectionElement.classList.add("profile--hidden");
     if (!profile && !(userIdElement && displayNameElement && profilePictureElement)) {
         console.warn("Profile data or some profile DOM elements were not available. Hiding profile section.");
     }
