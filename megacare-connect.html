@@ -1,355 +1,315 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-   <title>Mega Care Connect - LIFF App</title>
-   <script src="https://cdn.tailwindcss.com"></script>
-   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-   <style>
-       body {
-           font-family: 'Kanit', sans-serif;
-           background-color: #F0FDF4; /* Very light green background */
-       }
-       /* Mint Green Theme */
-       .theme-primary { background-color: #34D399; } /* Emerald-400 */
-       .theme-primary-dark { background-color: #10B981; } /* Emerald-500 */
-       .theme-secondary { background-color: #A7F3D0; } /* Emerald-200 */
-       .text-theme-primary { color: #065F46; } /* Emerald-800 */
-       .text-theme-secondary { color: #047857; } /* Emerald-700 */
-       .border-theme-primary { border-color: #34D399; }
-       .page { display: none; }
-       .page.active { display: block; animation: fadeIn 0.3s; }
-       .nav-item { transition: all 0.2s ease-in-out; }
-       .nav-item.active {
-           color: #10B981; /* Emerald-500 */
-           border-top-color: #10B981;
-       }
-       @keyframes fadeIn {
-           from { opacity: 0; }
-           to { opacity: 1; }
-       }
-   </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Care Connect - LIFF App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #F0FDF4; /* Very light green background */
+        }
+        /* Mint Green Theme */
+        .theme-primary { background-color: #34D399; } /* Emerald-400 */
+        .theme-primary-dark { background-color: #10B981; } /* Emerald-500 */
+        .theme-secondary { background-color: #A7F3D0; } /* Emerald-200 */
+        .text-theme-primary { color: #065F46; } /* Emerald-800 */
+        .text-theme-secondary { color: #047857; } /* Emerald-700 */
+        .border-theme-primary { border-color: #34D399; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
+        .nav-item { transition: all 0.2s ease-in-out; }
+        .nav-item.active {
+            color: #10B981; /* Emerald-500 */
+            border-top-color: #10B981;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
 </head>
 <body class="text-gray-800">
 
+    <div id="app-container" class="max-w-md mx-auto min-h-screen bg-white shadow-lg flex flex-col">
 
-   <div id="app-container" class="max-w-md mx-auto min-h-screen bg-white shadow-lg flex flex-col">
+        <!-- ===== Page: Account Linking ===== -->
+        <div id="link-account-page" class="page flex-grow p-6 flex flex-col justify-center items-center text-center">
+             <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-theme-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            <h1 class="text-2xl font-bold text-theme-primary">เชื่อมต่อบัญชีของคุณ</h1>
+            <p class="text-gray-500 mt-2 mb-6">กรุณากรอกหมายเลข Serial Number ที่อยู่บนเครื่อง CPAP ของคุณเพื่อเริ่มต้นใช้งาน</p>
+            <div class="w-full">
+                <label for="serialNumber" class="sr-only">CPAP Serial Number</label>
+                <input type="text" id="serialNumber" placeholder="CPAP Serial Number" class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-theme-primary transition-colors">
+            </div>
+            <button id="connect-button" class="w-full theme-primary text-white font-bold py-3 px-4 rounded-lg mt-4 hover:theme-primary-dark transition-colors">
+                ยืนยันและเชื่อมต่อ
+            </button>
+        </div>
 
+        <!-- Main application content (hidden until linked) -->
+        <div id="main-app" class="hidden flex-grow flex flex-col">
+            <!-- Header -->
+            <header class="p-4 flex items-center bg-white border-b border-gray-200">
+                <img src="https://placehold.co/40x40/34D399/FFFFFF?text=P" alt="User Avatar" class="rounded-full mr-3">
+                <div>
+                    <p class="text-sm text-gray-500">สวัสดีตอนเช้า</p>
+                    <h1 class="font-bold text-lg text-theme-primary">คุณ Paripol เป้</h1>
+                </div>
+            </header>
 
-       <!-- ===== Page: Account Linking ===== -->
-       <div id="link-account-page" class="page flex-grow p-6 flex flex-col justify-center items-center text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-20 w-20 text-theme-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-               <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-           </svg>
-           <h1 class="text-2xl font-bold text-theme-primary">เชื่อมต่อบัญชีของคุณ</h1>
-           <p class="text-gray-500 mt-2 mb-6">กรุณากรอกหมายเลข Serial Number ที่อยู่บนเครื่อง CPAP ของคุณเพื่อเริ่มต้นใช้งาน</p>
-           <div class="w-full">
-               <label for="serialNumber" class="sr-only">CPAP Serial Number</label>
-               <input type="text" id="serialNumber" placeholder="CPAP Serial Number" class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-theme-primary transition-colors">
-           </div>
-           <button class="w-full theme-primary text-white font-bold py-3 px-4 rounded-lg mt-4 hover:theme-primary-dark transition-colors">
-               ยืนยันและเชื่อมต่อ
-           </button>
-       </div>
-
-
-       <!-- Main application content (hidden until linked) -->
-       <div id="main-app" class="hidden flex-grow flex flex-col">
-           <!-- Header -->
-           <header class="p-4 flex items-center bg-white border-b border-gray-200">
-               <img id="userProfilePicture" src="https://placehold.co/40x40/A7F3D0/FFFFFF?text=?" alt="User Avatar" class="rounded-full mr-3">
-               <div>
-                   <p class="text-sm text-gray-500">สวัสดีตอนเช้า</p>
-                   <h1 id="userDisplayName" class="font-bold text-lg text-theme-primary"></h1>
-               </div>
-           </header>
-
-
-           <!-- Content Area -->
-           <main class="flex-grow p-4 md:p-6 bg-gray-50 overflow-y-auto">
-               <!-- ===== Page: Dashboard ===== -->
-               <div id="dashboard-page" class="page">
-                   <h2 class="text-xl font-semibold mb-4 text-theme-primary">สรุปผลล่าสุด</h2>
-                   <div class="grid grid-cols-1 gap-4">
-                       <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-theme-primary">
+            <!-- Content Area -->
+            <main class="flex-grow p-4 md:p-6 bg-gray-50 overflow-y-auto">
+                <!-- ===== Page: Dashboard ===== -->
+                <div id="dashboard-page" class="page">
+                    <h2 class="text-xl font-semibold mb-4 text-theme-primary">สรุปผลล่าสุด</h2>
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-theme-primary">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full theme-secondary mr-4">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-theme-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">ชั่วโมงการใช้งาน</p>
+                                    <p class="text-2xl font-bold">5<span class="text-lg font-medium"> ชม.</span> 16<span class="text-lg font-medium"> นาที</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-red-400">
                            <div class="flex items-center">
-                               <div class="p-3 rounded-full theme-secondary mr-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-theme-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                               </div>
-                               <div>
-                                   <p class="text-sm text-gray-500">ชั่วโมงการใช้งาน</p>
-                                   <p class="text-2xl font-bold">5<span class="text-lg font-medium"> ชม.</span> 16<span class="text-lg font-medium"> นาที</span></p>
-                               </div>
-                           </div>
-                       </div>
-                       <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-red-400">
-                          <div class="flex items-center">
-                               <div class="p-3 rounded-full bg-red-100 mr-4">
-                                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                               </div>
-                               <div>
-                                   <p class="text-sm text-gray-500">ระดับการรั่วหน้ากาก</p>
-                                   <p class="text-2xl font-bold">57.6 <span class="text-base font-medium">ลิตร/นาที</span></p>
-                               </div>
-                           </div>
-                       </div>
-                        <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-yellow-400">
-                          <div class="flex items-center">
-                               <div class="p-3 rounded-full bg-yellow-100 mr-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
-                               </div>
-                               <div>
-                                   <p class="text-sm text-gray-500">ดัชนี AHI</p>
-                                   <p class="text-2xl font-bold">2.8 <span class="text-base font-medium">ครั้ง/ชม.</span></p>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
+                                <div class="p-3 rounded-full bg-red-100 mr-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">ระดับการรั่วหน้ากาก</p>
+                                    <p class="text-2xl font-bold">57.6 <span class="text-base font-medium">ลิตร/นาที</span></p>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-yellow-400">
+                           <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-100 mr-4">
+                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-500">ดัชนี AHI</p>
+                                    <p class="text-2xl font-bold">2.8 <span class="text-base font-medium">ครั้ง/ชม.</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-
-               <!-- ===== Page: Reports ===== -->
-               <div id="reports-page" class="page">
-                   <h2 class="text-xl font-semibold mb-4 text-theme-primary">รายงานย้อนหลัง</h2>
-                   <input type="date" class="w-full p-2 border rounded-lg mb-4" value="2025-06-23">
-                   <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
-                       <p class="font-bold mb-2">แนวโน้มดัชนี AHI</p>
-                       <img src="https://placehold.co/600x250/A7F3D0/065F46?text=Graph+Placeholder" alt="กราฟแสดงผล" class="w-full rounded">
-                   </div>
-                   <div class="space-y-3">
-                       <div class="report-item bg-white p-3 rounded-xl shadow-sm flex justify-between items-center cursor-pointer hover:bg-gray-50 transition">
-                           <div>
-                               <p class="font-semibold">22 มิถุนายน 2568</p>
-                               <p class="text-sm text-red-500">Leak สูง, AHI: 2.8</p>
-                           </div>
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                       </div>
+                <!-- ===== Page: Reports ===== -->
+                <div id="reports-page" class="page">
+                    <h2 class="text-xl font-semibold mb-4 text-theme-primary">รายงานย้อนหลัง</h2>
+                    <input type="date" class="w-full p-2 border rounded-lg mb-4" value="2025-06-23">
+                    <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
+                        <p class="font-bold mb-2">แนวโน้มดัชนี AHI</p>
+                        <img src="https://placehold.co/600x250/A7F3D0/065F46?text=Graph+Placeholder" alt="กราฟแสดงผล" class="w-full rounded">
+                    </div>
+                    <div class="space-y-3">
                         <div class="report-item bg-white p-3 rounded-xl shadow-sm flex justify-between items-center cursor-pointer hover:bg-gray-50 transition">
-                           <div>
-                               <p class="font-semibold">21 มิถุนายน 2568</p>
-                               <p class="text-sm text-green-600">ปกติ, AHI: 4.5</p>
-                           </div>
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                       </div>
-                   </div>
-               </div>
+                            <div>
+                                <p class="font-semibold">06 มิถุนายน 2567</p>
+                                <p class="text-sm text-red-500">Leak สูง, AHI: 2.8</p>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </div>
+                         <div class="report-item bg-white p-3 rounded-xl shadow-sm flex justify-between items-center cursor-pointer hover:bg-gray-50 transition">
+                            <div>
+                                <p class="font-semibold">05 มิถุนายน 2567</p>
+                                <p class="text-sm text-green-600">ปกติ, AHI: 4.5</p>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </div>
+                    </div>
+                </div>
 
+                 <!-- ===== Page: Report Detail ===== -->
+                <div id="report-detail-page" class="page">
+                    <a href="#" class="back-to-reports text-theme-secondary font-semibold mb-4 inline-flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+                        กลับไปหน้ารายงาน
+                    </a>
+                    <h2 class="text-xl font-semibold mb-1 text-theme-primary">ผลวิเคราะห์ข้อมูลการนอนหลับ</h2>
+                    <p class="text-gray-500 mb-4">วันที่ 06 มิถุนายน 2567</p>
+                    
+                    <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
+                        <h3 class="font-bold text-theme-secondary mb-3">ผลการอ่านข้อมูล</h3>
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                            <p class="text-gray-600">Usage:</p><p class="font-semibold text-right">5 ชม. 16 นาที</p>
+                            <p class="text-gray-600">Leak 95th %:</p><p class="font-semibold text-right">57.6 L/min</p>
+                            <p class="text-gray-600">Max Pressure:</p><p class="font-semibold text-right">15.0 cmH2O</p>
+                            <p class="text-gray-600">Pressure 95th %:</p><p class="font-semibold text-right">13.3 cmH2O</p>
+                            <p class="text-gray-600">AHI:</p><p class="font-semibold text-right">2.8</p>
+                            <p class="text-gray-600">RERA:</p><p class="font-semibold text-right">0.0</p>
+                        </div>
+                    </div>
 
-                <!-- ===== Page: Report Detail ===== -->
-               <div id="report-detail-page" class="page">
-                   <a href="#" class="back-to-reports text-theme-secondary font-semibold mb-4 inline-flex items-center">
-                       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
-                       กลับไปหน้ารายงาน
-                   </a>
-                   <h2 class="text-xl font-semibold mb-1 text-theme-primary">ผลวิเคราะห์ข้อมูลการนอนหลับ</h2>
-                   <p class="text-gray-500 mb-4">วันที่ 22 มิถุนายน 2568</p>
-                  
-                   <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
-                       <h3 class="font-bold text-theme-secondary mb-3">ผลการอ่านข้อมูล</h3>
-                       <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                           <p class="text-gray-600">Usage:</p><p class="font-semibold text-right">5 ชม. 16 นาที</p>
-                           <p class="text-gray-600">Leak 95th %:</p><p class="font-semibold text-right">57.6 L/min</p>
-                           <p class="text-gray-600">Max Pressure:</p><p class="font-semibold text-right">15.0 cmH2O</p>
-                           <p class="text-gray-600">Pressure 95th %:</p><p class="font-semibold text-right">13.3 cmH2O</p>
-                           <p class="text-gray-600">AHI:</p><p class="font-semibold text-right">2.8</p>
-                           <p class="text-gray-600">RERA:</p><p class="font-semibold text-right">0.0</p>
-                       </div>
-                   </div>
-
-
-                   <div class="space-y-3">
-                       <div class="bg-white p-4 rounded-xl shadow-sm">
-                           <h4 class="font-bold mb-2">Usage</h4>
-                           <div class="flex items-start">
-                               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                               <p class="text-sm">การนอนหลับมีประสิทธิภาพปกติ เนื่องจาก Usage มากกว่า 5 ชั่วโมง</p>
-                           </div>
-                       </div>
-
-
-                       <div class="bg-white p-4 rounded-xl shadow-sm">
-                           <h4 class="font-bold mb-2">Leak</h4>
-                           <div class="flex items-start">
-                               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                               <div>
-                                   <p class="text-sm text-red-700 font-semibold">มี Leak มากกว่าปกติ (57.6 L/min)</p>
-                                   <p class="text-sm mt-1">แนะนำให้ปรับหน้ากากให้กระชับพอดี ไม่แน่นหรือหลวมเกินไป และควรติดตามการใช้งานในวันถัดไป</p>
-                               </div>
-                           </div>
-                       </div>
-
+                    <div class="space-y-3">
+                        <div class="bg-white p-4 rounded-xl shadow-sm">
+                            <h4 class="font-bold mb-2">Usage</h4>
+                            <div class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <p class="text-sm">การนอนหลับมีประสิทธิภาพปกติ เนื่องจาก Usage มากกว่า 5 ชั่วโมง</p>
+                            </div>
+                        </div>
 
                         <div class="bg-white p-4 rounded-xl shadow-sm">
-                           <h4 class="font-bold mb-2">ประสิทธิภาพความดัน</h4>
-                           <div class="flex items-start">
-                               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                               <p class="text-sm">การตั้งค่าความดันมีประสิทธิภาพดี (88.6%)</p>
-                           </div>
-                       </div>
-                   </div>
+                            <h4 class="font-bold mb-2">Leak</h4>
+                            <div class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                                <div>
+                                    <p class="text-sm text-red-700 font-semibold">มี Leak มากกว่าปกติ (57.6 L/min)</p>
+                                    <p class="text-sm mt-1">แนะนำให้ปรับหน้ากากให้กระชับพอดี ไม่แน่นหรือหลวมเกินไป และควรติดตามการใช้งานในวันถัดไป</p>
+                                </div>
+                            </div>
+                        </div>
 
+                         <div class="bg-white p-4 rounded-xl shadow-sm">
+                            <h4 class="font-bold mb-2">ประสิทธิภาพความดัน</h4>
+                            <div class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <p class="text-sm">การตั้งค่าความดันมีประสิทธิภาพดี (88.6%)</p>
+                            </div>
+                        </div>
+                    </div>
 
-                   <div class="mt-4 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
-                       <h3 class="font-bold text-theme-primary mb-2">สรุปคำแนะนำ</h3>
-                       <p class="text-sm text-theme-secondary">จากผลโดยรวม พบว่ามีค่า **Leak สูงกว่าปกติ** จึงขอแนะนำให้ **ปรับความกระชับของหน้ากาก** เป็นอันดับแรก และสังเกตผลในคืนถัดไปครับ</p>
-                   </div>
-               </div>
+                    <div class="mt-4 bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                        <h3 class="font-bold text-theme-primary mb-2">สรุปคำแนะนำ</h3>
+                        <p class="text-sm text-theme-secondary">จากผลโดยรวม พบว่ามีค่า **Leak สูงกว่าปกติ** จึงขอแนะนำให้ **ปรับความกระชับของหน้ากาก** เป็นอันดับแรก และสังเกตผลในคืนถัดไปครับ</p>
+                    </div>
+                </div>
 
+                <!-- ===== Page: Equipment ===== -->
+                <div id="equipment-page" class="page">
+                     <h2 class="text-xl font-semibold mb-4 text-theme-primary">อุปกรณ์ของฉัน</h2>
+                    <div class="space-y-4">
+                        <div class="bg-white p-4 rounded-xl shadow-sm">
+                            <h3 class="font-bold text-theme-secondary mb-2">เครื่อง CPAP</h3>
+                            <p class="font-semibold">AirSense 10 AutoSet</p>
+                            <p class="text-sm text-gray-500">S/N: 22232746840</p>
+                            <p class="text-sm text-gray-400 mt-1">เพิ่มเมื่อ: 29/12/2023</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm">
+                            <h3 class="font-bold text-theme-secondary mb-2">หน้ากาก</h3>
+                            <p class="font-semibold">AirFit N20</p>
+                            <p class="text-sm text-gray-500">ขนาด: Large</p>
+                            <p class="text-sm text-gray-400 mt-1">เพิ่มเมื่อ: 01/10/2023</p>
+                        </div>
+                         <div class="bg-white p-4 rounded-xl shadow-sm">
+                            <h3 class="font-bold text-theme-secondary mb-2">ท่อลม</h3>
+                            <p class="font-semibold">ClimateLineAir</p>
+                             <p class="text-sm text-gray-400 mt-1">เพิ่มเมื่อ: 29/12/2023</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
 
-               <!-- ===== Page: Equipment ===== -->
-               <div id="equipment-page" class="page">
-                   <!-- ... (equipment content remains the same) ... -->
-               </div>
-           </main>
+            <!-- Bottom Navigation -->
+            <nav class="w-full bg-white border-t border-gray-200 grid grid-cols-3 text-center">
+                 <a href="#dashboard" class="nav-item p-3 border-t-2 border-transparent" data-page="dashboard-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                    <span class="text-xs font-medium">ภาพรวม</span>
+                </a>
+                <a href="#reports" class="nav-item p-3 border-t-2 border-transparent" data-page="reports-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    <span class="text-xs font-medium">รายงาน</span>
+                </a>
+                <a href="#equipment" class="nav-item p-3 border-t-2 border-transparent" data-page="equipment-page">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                    <span class="text-xs font-medium">อุปกรณ์</span>
+                </a>
+            </nav>
+        </div>
+    </div>
 
-
-           <!-- Bottom Navigation -->
-           <nav class="w-full bg-white border-t border-gray-200 grid grid-cols-3 text-center">
-                <a href="#dashboard" class="nav-item p-3 border-t-2 border-transparent" data-page="dashboard-page">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                   <span class="text-xs font-medium">ภาพรวม</span>
-               </a>
-               <a href="#reports" class="nav-item p-3 border-t-2 border-transparent active" data-page="reports-page">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                   <span class="text-xs font-medium">รายงาน</span>
-               </a>
-               <a href="#equipment" class="nav-item p-3 border-t-2 border-transparent" data-page="equipment-page">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                   <span class="text-xs font-medium">อุปกรณ์</span>
-               </a>
-           </nav>
-       </div>
-   </div>
-
-
-   <script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Constants and State ---
-            const LIFF_ID = "2005687951-Y3wNramZ";
+            const navItems = document.querySelectorAll('.nav-item');
+            const pages = document.querySelectorAll('.page');
             const mainApp = document.getElementById('main-app');
             const linkPage = document.getElementById('link-account-page');
-            const pages = document.querySelectorAll('.page');
-            const navItems = document.querySelectorAll('.nav-item');
             const reportItems = document.querySelectorAll('.report-item');
             const backToReportsButton = document.querySelector('.back-to-reports');
-            const userProfilePicture = document.getElementById('userProfilePicture');
-            const userDisplayName = document.getElementById('userDisplayName');
+            const connectButton = document.getElementById('connect-button');
 
-            // --- UI Functions ---
-
-            /**
-             * Shows a specific page within the main app view.
-             * @param {string} pageId The ID of the page to display.
-             */
             function showPage(pageId) {
                 pages.forEach(page => page.classList.remove('active'));
                 const targetPage = document.getElementById(pageId);
-                if (targetPage) {
+                if(targetPage) {
                     targetPage.classList.add('active');
                 }
                 updateActiveNav(pageId);
             }
-
-            /**
-             * Updates the active state of the bottom navigation.
-             * @param {string} pageId The ID of the currently active page.
-             */
+            
             function updateActiveNav(pageId) {
+                const rootPage = pageId.split('-')[0] + '-page';
                 navItems.forEach(nav => {
-                    if (nav.getAttribute('data-page') === pageId) {
-                        nav.classList.add('active');
+                    if (nav.getAttribute('data-page') === rootPage) {
+                         nav.classList.add('active');
                     } else {
                         nav.classList.remove('active');
                     }
                 });
             }
-            
-            /**
-             * Updates the header with the user's LINE profile information.
-             * @param {object} profile - The LIFF profile object.
-             */
-            function updateHeaderProfile(profile) {
-                if (profile && userDisplayName && userProfilePicture) {
-                    userDisplayName.textContent = profile.displayName;
-                    if (profile.pictureUrl) {
-                        userProfilePicture.src = profile.pictureUrl;
-                        userProfilePicture.alt = `${profile.displayName}'s profile picture`;
-                    }
-                } else {
-                    if(userDisplayName) userDisplayName.textContent = "User";
-                    if(userProfilePicture) {
-                        userProfilePicture.src = 'https://placehold.co/40x40/A7F3D0/FFFFFF?text=?';
-                        userProfilePicture.alt = 'Default user avatar';
-                    }
-                }
-            }
 
-            /**
-             * Shows the main application view and hides the linking page.
-             */
-            function showMainApp() {
+            function completeLinking() {
                 mainApp.style.display = 'flex';
                 linkPage.style.display = 'none';
-                showPage('dashboard-page'); // Default to dashboard view
+                showPage('dashboard-page');
             }
 
-            /**
-             * Shows the account linking page and hides the main app.
-             */
-            function showLinkPage() {
+            // --- APPLICATION FLOW LOGIC ---
+            // This logic ensures that a new user always sees the linking page first.
+            // A real application would check the linking status with a backend API.
+            const isUserLinked = false; 
+
+            if (isUserLinked) {
+                completeLinking();
+            } else {
                 mainApp.style.display = 'none';
-                linkPage.style.display = 'flex';
-                linkPage.classList.add('active'); // Ensure the link page is marked as active for display
+                showPage('link-account-page');
+            }
+            
+            // Event Listener for the connect button
+            if(connectButton) {
+                connectButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // In a real app, you would validate the serial number with your backend here.
+                    // For this demonstration, we'll just simulate a successful connection.
+                    console.log('Connect button clicked. Simulating successful link...');
+                    completeLinking();
+                });
             }
 
-            /**
-             * Mock function to check if a user's LINE account is linked to a device.
-             * In a real app, this would make an API call to your backend.
-             * @param {string} userId - The user's LINE ID.
-             * @returns {Promise<boolean>} - A promise that resolves to true if linked, false otherwise.
-             */
-            async function checkUserLinkStatus(userId) {
-                console.log(`Checking link status for user: ${userId}`);
-                // For demonstration, we'll assume the user is NOT linked to show the linking flow.
-                // To test the main app view, change this to `return true;`
-                return new Promise(resolve => setTimeout(() => resolve(false), 500));
-            }
+            // Event listeners for navigation
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                });
+            });
 
-            // --- Event Listeners ---
-            navItems.forEach(item => item.addEventListener('click', e => {
-                e.preventDefault();
-                showPage(item.getAttribute('data-page'));
-            }));
-            reportItems.forEach(item => item.addEventListener('click', () => showPage('report-detail-page')));
-            if (backToReportsButton) {
-                backToReportsButton.addEventListener('click', e => {
+            reportItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    showPage('report-detail-page');
+                });
+            });
+
+            if(backToReportsButton) {
+                backToReportsButton.addEventListener('click', function(e) {
                     e.preventDefault();
                     showPage('reports-page');
                 });
             }
-
-            // --- Main Application Logic ---
-            async function main() {
-                try {
-                    await liff.init({ liffId: LIFF_ID });
-                    if (!liff.isLoggedIn()) {
-                        liff.login();
-                        return;
-                    }
-                    const profile = await liff.getProfile();
-                    updateHeaderProfile(profile);
-                    const isUserLinked = await checkUserLinkStatus(profile.userId);
-                    isUserLinked ? showMainApp() : showLinkPage();
-                } catch (error) {
-                    console.error("LIFF Initialization failed:", error);
-                    showLinkPage(); // Fallback to link page on error
-                }
-            }
-
-            main();
         });
-   </script>
+    </script>
 </body>
 </html>
