@@ -107,13 +107,36 @@
       background-color: var(--mint-darker);
       transform: translateY(-2px);
     }
+
+    .link-container {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .app-link {
+      background-color: #e6f7f2;
+      color: var(--mint-darker);
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+
+    .app-link:hover {
+      background-color: #d1f0e9;
+    }
   </style>
 </head>
 <body>
 
   <div class="container">
     <h1>Device Registration</h1>
-    
+
+    <div class="link-container">
+      <a href="megacare-connect.html" class="app-link">เปิดหน้าแอป Mega Care Connect &rarr;</a>
+    </div>
+
     <div id="profile" class="card profile--hidden">
       <img id="profilePicture" width="60">
       <div>
