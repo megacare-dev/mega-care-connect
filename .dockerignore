@@ -1,0 +1,18 @@
+# Git version control folder
+.git
+.gitignore
+
+# Node.js dependencies - these are not needed in the final Nginx image
+node_modules
+
+# CI/CD configuration files
+cloudbuild.yaml
+
+# Local development or environment-specific files
+.env
+
+# Test files
+*.test.js
+
+# Documentation
+README.md

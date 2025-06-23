@@ -32,6 +32,10 @@ This project serves as a foundational template for creating, containerizing, and
 
 ---
 
+## Documentation
+
+- Requirement Specification
+
 ## Project Structure
 
 
@@ -135,4 +139,3 @@ Stores daily report data extracted from PDFs or other sources. The document ID i
 | `pressure`                | `map`       | A map containing median and 95th percentile pressure. |
 | `eventsPerHour`           | `map`       | A map of all respiratory events per hour (AHI, etc.). |
 | `deviceSnapshot`          | `map`       | A snapshot of the device settings during the report.  |
-
